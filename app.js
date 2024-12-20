@@ -3,6 +3,8 @@ const app = express(); //storing it in a variable
 const mongoose = require("mongoose"); //required to interact with Database
 const Listing = require("./models/listing.js"); //requiring the Listing that are being exported by the  "listing.js" file
 const path  = require("path"); //this is required to access '.ejs' files here
+const methodOverride = require("method-override"); //required for PUT/DELETE requests in forms in any .ejs file
+
 
 //this url that you get from MongoDB website
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
@@ -33,6 +35,9 @@ app.set("views", path.join(__dirname, "views"));
 //from the url of the request it can return us the parameters passed into it
 app.use(express.urlencoded({extended: true}));
 
+//using the 'method-override' package
+app.use(methodOverride("_method"));
+
 //root API
 app.get("/", (req,res) =>{
     res.send("Hi I am root");
@@ -50,6 +55,7 @@ app.get("/listings", async (req, res) => {
   res.render("./listings/index.ejs", {allListings});
 });
 
+
 //--------------------------New Route----------------------------
 //this route will take you to a page where you can add your own listing 
 app.get("/listings/new", (req, res) =>{
@@ -62,6 +68,30 @@ app.post("/listings", async (req, res)=> {
    await newListing.save();
    res.redirect("/listings");
 });
+
+
+//--------------------------Edit Route-----------------------------------
+app.get("/listings/:id/edit", async (req, res) =>{
+    //storing the id in a variable that is coming as parameters in request
+    let {id} = req.params;
+
+    //finding the particular listing stored in out DB using the id
+    const listing = await Listing.findById(id);
+
+    res.render("./listings/edit.ejs", {listing});
+     
+});
+//--------------------------Update Route----------------------------------
+//this route will help redirect from the edit route and it will put the newly updated listing on the homepage
+app.put("/listings/:id", async (req, res) =>{
+    let { id } = req.params;
+
+    //this will find the id and update the new changes by deconstructing the old ones
+    await Listing.findByIdAndUpdate(id, {...req.body.listing});
+
+    //redirecting to the same listing
+    res.redirect(`/listings/${id}`);
+})
 
 
 //--------------------------Show Route----------------------------
