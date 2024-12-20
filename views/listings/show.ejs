@@ -22,5 +22,10 @@ Listing model, which contains the data. -->
     </ul>
     <br>
     <a href = "/listings/<%=listing._id%>/edit">Edit this listing</a>
+    <br><br/>
+
+    <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE">
+        <button>Delete Listing</button>
+    </form>
 </body>
 </html>

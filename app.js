@@ -94,6 +94,14 @@ app.put("/listings/:id", async (req, res) =>{
 })
 
 
+//-------------------------Delete Route--------------------------------------------
+app.delete("/listings/:id", async (req, res)=>{
+    let {id} = req.params;
+    let deletedListing = await Listing.findByIdAndDelete(id);
+    console.log(deletedListing);
+    res.redirect("/listings");
+});
+
 //--------------------------Show Route----------------------------
 //this will show a particular listing that has been clicked upon - READ
 app.get("/listings/:id", async (req,res )=> {
