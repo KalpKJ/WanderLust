@@ -17,11 +17,14 @@ const listingSchema = new Schema({
     },
     description: String,
     image: {
-        type: String,
-        default: "https://unsplash.com/photos/brown-wooden-house-in-the-middle-of-forest-during-daytime-jo8pclRHmCI",
-        set: (v) => v ==="" 
-        ? "https://unsplash.com/photos/brown-wooden-house-in-the-middle-of-forest-during-daytime-jo8pclRHmCI"
-        : v
+        filename: {
+            type: String,
+            default: "defaultimage"
+        },
+        url: {
+            type: String,
+            default: "https://unsplash.com/photos/brown-wooden-house-in-the-middle-of-forest-during-daytime-jo8pclRHmCI"
+        }
     },
     price: Number,
     location: String,
