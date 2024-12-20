@@ -29,13 +29,17 @@ app.set("view engine", "ejs");
 //this code find a directory name "views" to look for our ejs file
 app.set("views", path.join(__dirname, "views"));
 
+//this line of code is required when you want to get data (id) from the search query
+//from the url of the request it can return us the parameters passed into it
+app.use(express.urlencoded({extended: true}));
+
 //root API
 app.get("/", (req,res) =>{
     res.send("Hi I am root");
 });
 
 
-//-----------Index Route------------------------
+//-------------------Index Route------------------------
 //this will show us all the listings that are added by default
 app.get("/listings", async (req, res) => {
 
@@ -46,22 +50,19 @@ app.get("/listings", async (req, res) => {
   res.render("./listings/index.ejs", {allListings});
 });
 
-//making another API to test
-//here we are creating a sample listing in an async function and waiting for it to save it in the DB
-// app.get("/testListing", async (req, res)=>{
-//     let sampleListing = new Listing({
-//         title: "My Villa",
-//         description: "in the woods",
-//         price: 1200,
-//         location: "Banff, Alberta",
-//         country: "Canada"
-//     })
+//--------------------------Show Route----------------------------
+//this will show a particular listing that has been clicked upon - READ
+app.get("/listings/:id", async (req,res )=> {
 
-//     //waiting for it to get saved in Data base
-//     await sampleListing.save();
-//     console.log("sample was saved");
-//     res.send("succesful testing");
-// });
+    //storing the id in a variable that is coming as parameters in request
+    let {id} = req.params;
+
+    //finding the particular listing stored in out DB using the id
+    const listing = await Listing.findById(id);
+
+    //rendering the 'show.ejs' file whenever a link is clicked upon and passing the details of listing to the file
+    res.render("./listings/show.ejs", {listing} )
+})
 
 //making the server listen to port 8080
 app.listen(8080, () =>{
