@@ -9,16 +9,16 @@ Listing model, which contains the data. -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WanderLust listing</title>
+    <title>WanderLust</title>
 </head>
 <body>
     <h3>Listing Details :</h3>
     <ul>
         <li>Title: <%=listing.title%></li>
         <li>Title: <%=listing.description%></li>
-        <li>Price: <%=listing.price%></li>
+        <li>Price: &#8377; <%=listing.price.toLocaleString("en-IN")%></li>
         <li>Location: <%=listing.location%></li>
-        <li>Rating: <%=listing.country%></li>
+        <li>Country: <%=listing.country%></li>
     </ul>
 </body>
 </html>

@@ -50,6 +50,20 @@ app.get("/listings", async (req, res) => {
   res.render("./listings/index.ejs", {allListings});
 });
 
+//--------------------------New Route----------------------------
+//this route will take you to a page where you can add your own listing 
+app.get("/listings/new", (req, res) =>{
+    res.render("./listings/new.ejs")
+});
+//------------------------Create Route-----------------------------
+//this will actually add a new listing using a POST request
+app.post("/listings", async (req, res)=> {
+   const newListing = new Listing(req.body.listing);
+   await newListing.save();
+   res.redirect("/listings");
+});
+
+
 //--------------------------Show Route----------------------------
 //this will show a particular listing that has been clicked upon - READ
 app.get("/listings/:id", async (req,res )=> {
@@ -62,7 +76,9 @@ app.get("/listings/:id", async (req,res )=> {
 
     //rendering the 'show.ejs' file whenever a link is clicked upon and passing the details of listing to the file
     res.render("./listings/show.ejs", {listing} )
-})
+});
+
+
 
 //making the server listen to port 8080
 app.listen(8080, () =>{
