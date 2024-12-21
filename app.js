@@ -4,6 +4,7 @@ const mongoose = require("mongoose"); //required to interact with Database
 const Listing = require("./models/listing.js"); //requiring the Listing that are being exported by the  "listing.js" file
 const path  = require("path"); //this is required to access '.ejs' files here
 const methodOverride = require("method-override"); //required for PUT/DELETE requests in forms in any .ejs file
+const ejsMate = require("ejs-mate") //required for better templating/layout
 
 
 //this url that you get from MongoDB website
@@ -37,6 +38,12 @@ app.use(express.urlencoded({extended: true}));
 
 //using the 'method-override' package
 app.use(methodOverride("_method"));
+
+//setting ejs-mate as an engine
+app.engine("ejs", ejsMate);
+
+//this code is required to access static files like css from the public folder
+app.use(express.static(path.join(__dirname, "/public")));
 
 //root API
 app.get("/", (req,res) =>{
