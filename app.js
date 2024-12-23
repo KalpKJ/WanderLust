@@ -6,6 +6,7 @@ const path  = require("path"); //this is required to access '.ejs' files here
 const methodOverride = require("method-override"); //required for PUT/DELETE requests in forms in any .ejs file
 const ejsMate = require("ejs-mate") //required for better templating/layout
 const wrapAsync = require("./utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
+const ExpressError = require ("./utils/ExpressErrors.js"); //to handle errors thrown by Express
 
 //this url that you get from MongoDB website
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
@@ -126,11 +127,17 @@ app.get("/listings/:id", async (req,res )=> {
     res.render("./listings/show.ejs", {listing} )
 });
 
+//if the path entered by the user does not match any of the above mentioned path then
+app.all("*", (req, res, next) =>{
+    next(new ExpressError(404, "Page not found"));//throwing this error
+});
+
 
 //--------------Defining error handling middlewares------------------------
 //this function has an 'err' as a parameter hence it will handle errors
 app.use((err, req, res, next) => {
-    res.send("something went wrong");
+    let {statusCode, message} = err; //deconstructing status code and message from error
+    res.statusCode(statusCode).send(message);//setting that status code and message to our response
 });
 
 
