@@ -137,7 +137,7 @@ app.all("*", (req, res, next) =>{
 //this function has an 'err' as a parameter hence it will handle errors
 app.use((err, req, res, next) => {
     let {statusCode, message} = err; //deconstructing status code and message from error
-    res.statusCode(statusCode).send(message);//setting that status code and message to our response
+    res.status(statusCode).send(message);//setting that status code and message to our response
 });
 
 
