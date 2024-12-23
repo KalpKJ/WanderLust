@@ -7,6 +7,7 @@ const methodOverride = require("method-override"); //required for PUT/DELETE req
 const ejsMate = require("ejs-mate") //required for better templating/layout
 const wrapAsync = require("./utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
 const ExpressError = require ("./utils/ExpressErrors.js"); //to handle errors thrown by Express
+const {listingSchema} = require("./schema.js");//a joi package that checks if the data that client sent has a valid schema or not
 
 //this url that you get from MongoDB website
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
@@ -74,9 +75,10 @@ app.get("/listings/new", (req, res) =>{
 app.post(
   "/listings",
   wrapAsync(async (req, res, next) => {
-    //if the client is not sending correct data
-    if(!req.body.listing){
-        throw new ExpressError(400, "Send valid data for listing");
+    let result = listingSchema.validate(req.body);
+    console.log(result);
+    if(result.error){
+        throw new ExpressError(400, result.error);
     }
     const newListing = new Listing(req.body.listing);
     await newListing.save();
