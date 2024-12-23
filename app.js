@@ -54,14 +54,14 @@ app.get("/", (req,res) =>{
 
 //-------------------Index Route------------------------
 //this will show us all the listings that are added by default
-app.get("/listings", async (req, res) => {
+app.get("/listings", wrapAsync(async (req, res) => {
 
   //this is finding all the listings stored in 'Listing' model of DB 
   const allListings = await Listing.find({});
 
   //we are rendering the html page through 'index.ejs' and passing in the all the listings to use in that file
   res.render("./listings/index.ejs", {allListings});
-});
+}));
 
 
 //--------------------------New Route----------------------------
@@ -82,7 +82,7 @@ app.post(
 
 
 //--------------------------Edit Route-----------------------------------
-app.get("/listings/:id/edit", async (req, res) =>{
+app.get("/listings/:id/edit", wrapAsync(async (req, res) =>{
     //storing the id in a variable that is coming as parameters in request
     let {id} = req.params;
 
@@ -91,10 +91,10 @@ app.get("/listings/:id/edit", async (req, res) =>{
 
     res.render("./listings/edit.ejs", {listing});
      
-});
+}));
 //--------------------------Update Route----------------------------------
 //this route will help redirect from the edit route and it will put the newly updated listing on the homepage
-app.put("/listings/:id", async (req, res) =>{
+app.put("/listings/:id", wrapAsync(async (req, res) =>{
     let { id } = req.params;
 
     //this will find the id and update the new changes by deconstructing the old ones
@@ -102,20 +102,20 @@ app.put("/listings/:id", async (req, res) =>{
 
     //redirecting to the same listing
     res.redirect(`/listings/${id}`);
-})
+}));
 
 
 //-------------------------Delete Route--------------------------------------------
-app.delete("/listings/:id", async (req, res)=>{
+app.delete("/listings/:id", wrapAsync(async (req, res)=>{
     let {id} = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
     console.log(deletedListing);
     res.redirect("/listings");
-});
+}));
 
 //--------------------------Show Route----------------------------
 //this will show a particular listing that has been clicked upon - READ
-app.get("/listings/:id", async (req,res )=> {
+app.get("/listings/:id", wrapAsync(async (req,res )=> {
 
     //storing the id in a variable that is coming as parameters in request
     let {id} = req.params;
@@ -125,7 +125,7 @@ app.get("/listings/:id", async (req,res )=> {
 
     //rendering the 'show.ejs' file whenever a link is clicked upon and passing the details of listing to the file
     res.render("./listings/show.ejs", {listing} )
-});
+}));
 
 //if the path entered by the user does not match any of the above mentioned path then
 app.all("*", (req, res, next) =>{
@@ -136,7 +136,7 @@ app.all("*", (req, res, next) =>{
 //--------------Defining error handling middlewares------------------------
 //this function has an 'err' as a parameter hence it will handle errors
 app.use((err, req, res, next) => {
-    let {statusCode, message} = err; //deconstructing status code and message from error
+    let {statusCode = 500, message = "Something went wrong"} = err; //deconstructing status code and message from error
     res.status(statusCode).send(message);//setting that status code and message to our response
 });
 
