@@ -74,6 +74,10 @@ app.get("/listings/new", (req, res) =>{
 app.post(
   "/listings",
   wrapAsync(async (req, res, next) => {
+    //if the client is not sending correct data
+    if(!req.body.listing){
+        throw new ExpressError(400, "Send valid data for listing");
+    }
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings");
@@ -95,6 +99,10 @@ app.get("/listings/:id/edit", wrapAsync(async (req, res) =>{
 //--------------------------Update Route----------------------------------
 //this route will help redirect from the edit route and it will put the newly updated listing on the homepage
 app.put("/listings/:id", wrapAsync(async (req, res) =>{
+     //if the client is not sending correct data
+     if(!req.body.listing){
+        throw new ExpressError(400, "Send valid data for listing");
+    }
     let { id } = req.params;
 
     //this will find the id and update the new changes by deconstructing the old ones
@@ -137,7 +145,8 @@ app.all("*", (req, res, next) =>{
 //this function has an 'err' as a parameter hence it will handle errors
 app.use((err, req, res, next) => {
     let {statusCode = 500, message = "Something went wrong"} = err; //deconstructing status code and message from error
-    res.status(statusCode).send(message);//setting that status code and message to our response
+    res.status(statusCode).render("error.ejs" , {message})
+   // res.status(statusCode).send(message);//setting that status code and message to our response
 });
 
 
