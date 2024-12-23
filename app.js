@@ -5,7 +5,7 @@ const Listing = require("./models/listing.js"); //requiring the Listing that are
 const path  = require("path"); //this is required to access '.ejs' files here
 const methodOverride = require("method-override"); //required for PUT/DELETE requests in forms in any .ejs file
 const ejsMate = require("ejs-mate") //required for better templating/layout
-
+const wrapAsync = require("./utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
 
 //this url that you get from MongoDB website
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
@@ -70,11 +70,14 @@ app.get("/listings/new", (req, res) =>{
 });
 //------------------------Create Route-----------------------------
 //this will actually add a new listing using a POST request
-app.post("/listings", async (req, res)=> {
-   const newListing = new Listing(req.body.listing);
-   await newListing.save();
-   res.redirect("/listings");
-});
+app.post(
+  "/listings",
+  wrapAsync(async (req, res, next) => {
+    const newListing = new Listing(req.body.listing);
+    await newListing.save();
+    res.redirect("/listings");
+  })
+);
 
 
 //--------------------------Edit Route-----------------------------------
@@ -123,6 +126,12 @@ app.get("/listings/:id", async (req,res )=> {
     res.render("./listings/show.ejs", {listing} )
 });
 
+
+//--------------Defining error handling middlewares------------------------
+//this function has an 'err' as a parameter hence it will handle errors
+app.use((err, req, res, next) => {
+    res.send("something went wrong");
+});
 
 
 //making the server listen to port 8080
