@@ -52,6 +52,20 @@ app.get("/", (req,res) =>{
     res.send("Hi I am root");
 });
 
+//a function that uses joi to validate listing on server side
+const validateListing = (req, res, next) =>{
+
+    //extracting if there is any error from the request body using joi
+    let {error} = listingSchema.validate(req.body);
+
+    //if there is error we will throw our ExpressError
+    if(error){
+        let errMsg = error.details.map((el) =>el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    }else{//else we will call next middleware
+        next();
+    }
+}
 
 //-------------------Index Route------------------------
 //this will show us all the listings that are added by default
@@ -71,15 +85,10 @@ app.get("/listings/new", (req, res) =>{
     res.render("./listings/new.ejs")
 });
 //------------------------Create Route-----------------------------
-//this will actually add a new listing using a POST request
+//this will actually add a new listing using a POST request after validating it
 app.post(
-  "/listings",
+  "/listings", validateListing,
   wrapAsync(async (req, res, next) => {
-    let result = listingSchema.validate(req.body);
-    console.log(result);
-    if(result.error){
-        throw new ExpressError(400, result.error);
-    }
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings");
@@ -99,12 +108,10 @@ app.get("/listings/:id/edit", wrapAsync(async (req, res) =>{
      
 }));
 //--------------------------Update Route----------------------------------
-//this route will help redirect from the edit route and it will put the newly updated listing on the homepage
-app.put("/listings/:id", wrapAsync(async (req, res) =>{
-     //if the client is not sending correct data
-     if(!req.body.listing){
-        throw new ExpressError(400, "Send valid data for listing");
-    }
+//this route will help redirect from the edit route and it will put the newly updated listing on the homepage after validating the request
+app.put("/listings/:id", 
+    validateListing,
+    wrapAsync(async (req, res) =>{
     let { id } = req.params;
 
     //this will find the id and update the new changes by deconstructing the old ones
