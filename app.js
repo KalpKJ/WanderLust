@@ -160,7 +160,8 @@ app.get("/listings/:id", wrapAsync(async (req,res )=> {
     res.render("./listings/show.ejs", {listing} )
 }));
 
-//-----------------------Reviews (Post Route)------------------------------------
+//----------***************Reviews***********-------------------------- 
+// -------------------(Post Review Route)------------------------------------
 //this route will be together with '/listings' route as listings and reviews has one to many relationship
 app.post(
   "/listings/:id/reviews",
@@ -184,6 +185,19 @@ app.post(
     res.redirect(`/listings/${listing._id}`);
   })
 );
+
+//---------------------------(Delete Review Route)---------------------------------
+app.delete(
+  "/listings/:id/reviews/:reviewId",
+  wrapAsync(async (req, res) => {
+    let { id, reviewId } = req.params;
+    await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+
+    res.redirect(`/listings/${id}`);
+  })
+);
+
 
 //if the path entered by the user does not match any of the above mentioned path then
 app.all("*", (req, res, next) =>{
