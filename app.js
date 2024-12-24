@@ -8,9 +8,10 @@ const ejsMate = require("ejs-mate") //required for better templating/layout
 const wrapAsync = require("./utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
 const ExpressError = require ("./utils/ExpressErrors.js"); //to handle errors thrown by Express
 const {listingSchema} = require("./schema.js");//a joi package that checks if the data that client sent has a valid schema or not
+const Review = require("./models/review.js") ////requiring the Review that are being exported by the  "review.js" file
 
 //this url that you get from MongoDB website
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust"; 
 
 //calling the main function
 main()
@@ -143,6 +144,28 @@ app.get("/listings/:id", wrapAsync(async (req,res )=> {
     //rendering the 'show.ejs' file whenever a link is clicked upon and passing the details of listing to the file
     res.render("./listings/show.ejs", {listing} )
 }));
+
+//-----------------------Reviews (Post Route)------------------------------------
+//this route will be together with '/listings' route as listings and reviews has one to many relationship
+app.post("/listings/:id/reviews", async (req, res)=>{
+
+    //first finding the listing using the id
+    let listing = await Listing.findById(req.params.id);
+
+    //then extracting the review that came in the body of the request
+    let newReview = new Review(req.body.review);
+
+    //pushing the review into the DB of listings
+    listing.reviews.push(newReview);
+
+    //saving the new review
+    await newReview.save();
+
+    //updating the listings collections
+    await listing.save();
+
+    res.redirect(`/listings/${listing._id}`)
+});
 
 //if the path entered by the user does not match any of the above mentioned path then
 app.all("*", (req, res, next) =>{
