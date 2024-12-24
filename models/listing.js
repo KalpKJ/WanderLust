@@ -4,6 +4,7 @@
 
 //required mongoose because we will be storing data in MongoDB
 const mongoose = require("mongoose");
+const review = require("./review");
 
 //storing the schema in a variable
 const Schema = mongoose.Schema; 
@@ -28,7 +29,13 @@ const listingSchema = new Schema({
     },
     price: Number,
     location: String,
-    country: String
+    country: String,
+    reviews: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Review"
+        }
+    ]
 });
 
 //making a new model i.e a group od items that uses above defined schema
