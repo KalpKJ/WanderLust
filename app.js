@@ -7,7 +7,7 @@ const methodOverride = require("method-override"); //required for PUT/DELETE req
 const ejsMate = require("ejs-mate") //required for better templating/layout
 const wrapAsync = require("./utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
 const ExpressError = require ("./utils/ExpressErrors.js"); //to handle errors thrown by Express
-const {listingSchema} = require("./schema.js");//a joi package that checks if the data that client sent has a valid schema or not
+const {listingSchema, reviewSchema} = require("./schema.js");//a joi package that checks if the data that client sent has a valid schema or not
 const Review = require("./models/review.js") ////requiring the Review that are being exported by the  "review.js" file
 
 //this url that you get from MongoDB website
@@ -58,6 +58,21 @@ const validateListing = (req, res, next) =>{
 
     //extracting if there is any error from the request body using joi
     let {error} = listingSchema.validate(req.body);
+
+    //if there is error we will throw our ExpressError
+    if(error){
+        let errMsg = error.details.map((el) =>el.message).join(",");
+        throw new ExpressError(400, errMsg);
+    }else{//else we will call next middleware
+        next();
+    }
+}
+
+//a function that uses joi to validate reviews on server side
+const validateReview = (req, res, next) =>{
+
+    //extracting if there is any error from the request body using joi
+    let {error} = reviewSchema.validate(req.body);
 
     //if there is error we will throw our ExpressError
     if(error){
@@ -147,8 +162,10 @@ app.get("/listings/:id", wrapAsync(async (req,res )=> {
 
 //-----------------------Reviews (Post Route)------------------------------------
 //this route will be together with '/listings' route as listings and reviews has one to many relationship
-app.post("/listings/:id/reviews", async (req, res)=>{
-
+app.post(
+  "/listings/:id/reviews",
+  validateReview,
+  wrapAsync(async (req, res) => {
     //first finding the listing using the id
     let listing = await Listing.findById(req.params.id);
 
@@ -164,8 +181,9 @@ app.post("/listings/:id/reviews", async (req, res)=>{
     //updating the listings collections
     await listing.save();
 
-    res.redirect(`/listings/${listing._id}`)
-});
+    res.redirect(`/listings/${listing._id}`);
+  })
+);
 
 //if the path entered by the user does not match any of the above mentioned path then
 app.all("*", (req, res, next) =>{
