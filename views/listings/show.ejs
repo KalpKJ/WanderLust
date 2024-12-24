@@ -51,6 +51,13 @@ Listing model, which contains the data. -->
             <br>
             <button class = "btn btn-outline-dark" >Submit</button>
         </form>
+        <hr>
+        <h4>All Reviews</h4>
+        <ul>
+        <% for(review of listing.reviews){ %>
+            <li> <%= review.comment%> Ratings: <%= review.rating%> stars</li>
+        <% } %>
+        </ul>
     </div>
 
 </div>
