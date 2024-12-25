@@ -4,7 +4,7 @@
 
 //required mongoose because we will be storing data in MongoDB
 const mongoose = require("mongoose");
-const review = require("./review");
+const Review = require("./review");
 
 //storing the schema in a variable
 const Schema = mongoose.Schema; 
@@ -36,6 +36,12 @@ const listingSchema = new Schema({
             ref: "Review"
         }
     ]
+});
+listingSchema.post("findOneAndDelete", async(listing) =>{
+    if(listing){
+        await Review.deleteMany({_id: {$in : listing.reviews}});
+    }
+    
 });
 
 //making a new model i.e a group od items that uses above defined schema
