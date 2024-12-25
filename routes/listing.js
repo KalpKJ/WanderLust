@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Listing = require("../models/listing.js"); //requiring the Listing that are being exported by the  "listing.js" file
 const wrapAsync = require("../utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
-const {listingSchema, reviewSchema} = require("../schema.js");//a joi package that checks if the data that client sent has a valid schema or not
+const {listingSchema} = require("../schema.js");//a joi package that checks if the data that client sent has a valid schema or not
 const ExpressError = require ("../utils/ExpressErrors.js"); //to handle errors thrown by Express
 
 
@@ -33,21 +33,7 @@ router.get(
     res.render("./listings/index.ejs", { allListings });
   })
 );
-//--------------------------Show Route----------------------------
-//this will show a particular listing that has been clicked upon - READ
-router.get(
-  "/:id",
-  wrapAsync(async (req, res) => {
-    //storing the id in a variable that is coming as parameters in request
-    let { id } = req.params;
 
-    //finding the particular listing stored in out DB using the id
-    const listing = await Listing.findById(id).populate("reviews");
-
-    //rendering the 'show.ejs' file whenever a link is clicked upon and passing the details of listing to the file
-    res.render("./listings/show.ejs", { listing });
-  })
-);
 //--------------------------New Route----------------------------
 //this route will take you to a page where you can add your own listing
 router.get("/new", (req, res) => {
@@ -64,7 +50,21 @@ router.post(
     res.redirect("/listings");
   })
 );
-
+//--------------------------Show Route----------------------------
+//this will show a particular listing that has been clicked upon - READ
+router.get(
+    "/:id",
+    wrapAsync(async (req, res) => {
+      //storing the id in a variable that is coming as parameters in request
+      let { id } = req.params;
+  
+      //finding the particular listing stored in out DB using the id
+      const listing = await Listing.findById(id).populate("reviews");
+  
+      //rendering the 'show.ejs' file whenever a link is clicked upon and passing the details of listing to the file
+      res.render("./listings/show.ejs", { listing });
+    })
+  );
 //--------------------------Edit Route-----------------------------------
 router.get(
   "/:id/edit",
