@@ -6,7 +6,7 @@ const methodOverride = require("method-override"); //required for PUT/DELETE req
 const ejsMate = require("ejs-mate") //required for better templating/layout
 const ExpressError = require ("./utils/ExpressErrors.js"); //to handle errors thrown by Express
 const session = require("express-session"); //to handle sending session id to client
-
+const flash = require("connect-flash"); //to display flash messages on the page
 
 const listings = require("./routes/listing.js"); //getting all the routes from 'listing.js' file
 const reviews = require("./routes/review.js"); //getting all the routes from 'review.js' file
@@ -60,7 +60,6 @@ const sessionOption = {
     }
 };
 
-app.use(session(sessionOption));
 
 //root API
 app.get("/", (req,res) =>{
@@ -68,6 +67,14 @@ app.get("/", (req,res) =>{
 });
 
 
+app.use(session(sessionOption));
+app.use(flash());
+
+//this middleware looks for a 'success' message in the request
+app.use((req, res, next) =>{
+    res.locals.success = req.flash("success");
+    next();
+});
 
 
 //--*****************Listings*****************----------------------------------------------------
