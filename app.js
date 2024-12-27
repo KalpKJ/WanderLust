@@ -73,6 +73,7 @@ app.use(flash());
 //this middleware looks for a 'success' message in the request
 app.use((req, res, next) =>{
     res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
     next();
 });
 

@@ -62,6 +62,11 @@ router.get(
       //finding the particular listing stored in out DB using the id
       const listing = await Listing.findById(id).populate("reviews");
   
+      if(!listing){
+        req.flash("error", "Listing you requested for does not exist");
+        res.redirect("/listings");
+      }
+
       //rendering the 'show.ejs' file whenever a link is clicked upon and passing the details of listing to the file
       res.render("./listings/show.ejs", { listing });
     })
@@ -75,7 +80,10 @@ router.get(
     
     //finding the particular listing stored in out DB using the id
     const listing = await Listing.findById(id);
-
+    if(!listing){
+      req.flash("error", "Listing you requested for does not exist");
+      res.redirect("/listings");
+    }
     res.render("./listings/edit.ejs", { listing });
   })
 );
