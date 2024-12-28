@@ -7,6 +7,9 @@ const ejsMate = require("ejs-mate") //required for better templating/layout
 const ExpressError = require ("./utils/ExpressErrors.js"); //to handle errors thrown by Express
 const session = require("express-session"); //to handle sending session id to client
 const flash = require("connect-flash"); //to display flash messages on the page
+const passport = require("passport"); //required to configure user-login 
+const LocalStrategy = require("passport-local"); //local strategy is a passport strategy that allows us to create a 'username' & 'password'
+const user = require("./models/user.js"); //requiring user schema
 
 const listings = require("./routes/listing.js"); //getting all the routes from 'listing.js' file
 const reviews = require("./routes/review.js"); //getting all the routes from 'review.js' file
@@ -69,6 +72,19 @@ app.get("/", (req,res) =>{
 
 app.use(session(sessionOption));
 app.use(flash());
+
+//initializing passport package whenever there is a new request
+app.use(passport.initialize());
+
+//to provide the ability to identify users as they browse from page to page
+app.use(passport.session());
+
+//to authenticate all the users in the local strategy
+passport.use(new LocalStrategy(User.authenticate()));
+
+//to store and unstore all the user-info in the session
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 //this middleware looks for a 'success' message in the request
 app.use((req, res, next) =>{
