@@ -9,7 +9,7 @@ const session = require("express-session"); //to handle sending session id to cl
 const flash = require("connect-flash"); //to display flash messages on the page
 const passport = require("passport"); //required to configure user-login 
 const LocalStrategy = require("passport-local"); //local strategy is a passport strategy that allows us to create a 'username' & 'password'
-const user = require("./models/user.js"); //requiring user schema
+const User = require("./models/user.js"); //requiring user schema
 
 const listings = require("./routes/listing.js"); //getting all the routes from 'listing.js' file
 const reviews = require("./routes/review.js"); //getting all the routes from 'review.js' file
@@ -93,6 +93,16 @@ app.use((req, res, next) =>{
     next();
 });
 
+app.get("/demouser", async (req, res) => {
+    let fakeUser = new User({
+        email: "kalp@gmail.com",
+        username: "kalpk"
+
+    });
+
+    let registeredUser = await User.register(fakeUser, "helloworld");
+    res.send(registeredUser);
+});
 
 //--*****************Listings*****************----------------------------------------------------
 //instead of using all the routes in its seperate functions, we are just using this one line of code
