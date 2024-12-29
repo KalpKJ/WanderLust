@@ -94,17 +94,6 @@ app.use((req, res, next) =>{
     next();
 });
 
-app.get("/demouser", async (req, res) => {
-    let fakeUser = new User({
-        email: "kalp@gmail.com",
-        username: "kalpk"
-
-    });
-
-    let registeredUser = await User.register(fakeUser, "helloworld");
-    res.send(registeredUser);
-});
-
 //--*****************Listings*****************----------------------------------------------------
 //instead of using all the routes in its seperate functions, we are just using this one line of code
 // because we moved all the functions to a different file and exported it
