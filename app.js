@@ -11,8 +11,9 @@ const passport = require("passport"); //required to configure user-login
 const LocalStrategy = require("passport-local"); //local strategy is a passport strategy that allows us to create a 'username' & 'password'
 const User = require("./models/user.js"); //requiring user schema
 
-const listings = require("./routes/listing.js"); //getting all the routes from 'listing.js' file
-const reviews = require("./routes/review.js"); //getting all the routes from 'review.js' file
+const listingRouter = require("./routes/listing.js"); //getting all the routes from 'listing.js' file
+const reviewRouter = require("./routes/review.js"); //getting all the routes from 'review.js' file
+const userRouter = require("./routes/user.js"); //getting all the routes from 'user.js' file
 
 //this url that you get from MongoDB website
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust"; 
@@ -107,13 +108,14 @@ app.get("/demouser", async (req, res) => {
 //--*****************Listings*****************----------------------------------------------------
 //instead of using all the routes in its seperate functions, we are just using this one line of code
 // because we moved all the functions to a different file and exported it
-app.use("/listings", listings);
+app.use("/listings", listingRouter);
 
 
 //--*****************Reviews*****************----------------------------------------------------
-app.use("/listings/:id/reviews", reviews)
+app.use("/listings/:id/reviews", reviewRouter);
 
-
+//--*****************User*****************----------------------------------------------------
+app.use("/", userRouter);
 
 
 //if the path entered by the user does not match any of the above mentioned path then
