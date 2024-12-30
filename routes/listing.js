@@ -4,6 +4,7 @@ const Listing = require("../models/listing.js"); //requiring the Listing that ar
 const wrapAsync = require("../utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
 const {listingSchema} = require("../schema.js");//a joi package that checks if the data that client sent has a valid schema or not
 const ExpressError = require ("../utils/ExpressErrors.js"); //to handle errors thrown by Express
+const {isLoggedIn} = require("../middleware.js"); // added the middleware file
 
 
 //a function that uses joi to validate listing on server side
@@ -36,7 +37,7 @@ router.get(
 
 //--------------------------New Route----------------------------
 //this route will take you to a page where you can add your own listing
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   res.render("./listings/new.ejs");
 });
 //------------------------Create Route-----------------------------
