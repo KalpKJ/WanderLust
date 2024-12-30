@@ -44,6 +44,7 @@ router.get("/new", isLoggedIn, (req, res) => {
 //this will actually add a new listing using a POST request after validating it
 router.post(
   "/",
+  isLoggedIn,
   validateListing,
   wrapAsync(async (req, res, next) => {
     const newListing = new Listing(req.body.listing);
@@ -75,6 +76,7 @@ router.get(
 //--------------------------Edit Route-----------------------------------
 router.get(
   "/:id/edit",
+  isLoggedIn,
   wrapAsync(async (req, res) => {
     //storing the id in a variable that is coming as parameters in request
     let { id } = req.params;
@@ -92,6 +94,7 @@ router.get(
 //this route will help redirect from the edit route and it will put the newly updated listing on the homepage after validating the request
 router.put(
   "/:id",
+  isLoggedIn,
   validateListing,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
@@ -109,6 +112,7 @@ router.put(
 //-------------------------Delete Route--------------------------------------------
 router.delete(
   "/:id",
+  isLoggedIn,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
