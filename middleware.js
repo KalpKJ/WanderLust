@@ -1,4 +1,5 @@
-const Listing = require("./models/listing")
+const Listing = require("./models/listing");
+const Review = require("./models/review");
 const {listingSchema, reviewSchema} = require("./schema.js");//a joi package that checks if the data that client sent has a valid schema or not
 const ExpressError = require ("./utils/ExpressErrors.js"); //to handle errors thrown by Express
 
@@ -61,4 +62,18 @@ module.exports.validateReview = (req, res, next) => {
     //else we will call next middleware
     next();
   }
+};
+
+module.exports.isReviewAuthor = async (req, res, next) =>{
+  let { id, reviewId } = req.params;
+
+  //first finding the id of the review from the DB
+  let review = await Review.findById(reviewId);
+
+  if(!review.author._id.equals(res.locals.currUser._id)){
+    req.flash("error", "You are not the author of this review");
+    return res.redirect(`/listings/${id}`);
+  }
+
+  next();
 };

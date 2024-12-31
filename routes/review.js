@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router({mergeParams: true});
 const wrapAsync = require("../utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
-const { validateReview, isLoggedIn } = require("../middleware.js"); //a joi package that checks if the data that client sent has a valid schema or not
+const { validateReview, isLoggedIn, isReviewAuthor } = require("../middleware.js"); //a joi package that checks if the data that client sent has a valid schema or not
 const Review = require("../models/review.js"); ////requiring the Review that are being exported by the  "review.js" file
 const Listing = require("../models/listing.js"); //requiring the Listing that are being exported by the  "listing.js" file
 
@@ -22,7 +22,6 @@ router.post(
     let newReview = new Review(req.body.review);
 
     //pushing the review into the DB of listings
-    listing.reviews.push(newReview);
     newReview.author = req.user._id;
     listing.reviews.push(newReview);
 
@@ -40,6 +39,8 @@ router.post(
 //---------------------------(Delete Review Route)---------------------------------
 router.delete(
   "/:reviewId",
+  isLoggedIn,
+  isReviewAuthor,
   wrapAsync(async (req, res) => {
     let { id, reviewId } = req.params;
     await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
