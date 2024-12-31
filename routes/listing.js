@@ -6,24 +6,53 @@ const {isLoggedIn, isOwner, validateListing} = require("../middleware.js"); // a
 
 const listingController = require("../controllers/listings.js")
 
-//-------------------Index Route------------------------
-//this will show us all the listings that are added by default
-router.get("/", wrapAsync(listingController.index));
 
+router.route("/")
+
+  //-------------------Index Route------------------------
+  //this will show us all the listings that are added by default
+  
+
+  .get(wrapAsync(listingController.index))
+
+  //------------------------Create Route-----------------------------
+  //this will actually add a new listing using a POST request after validating it
+  .post(
+    isLoggedIn,
+    validateListing,
+    wrapAsync(listingController.createListing)
+  )
+//********************************************************************************************************** */
 //--------------------------New Route----------------------------
 //this route will take you to a page where you can add your own listing
 router.get("/new", isLoggedIn, listingController.renderNewForm);
-//------------------------Create Route-----------------------------
-//this will actually add a new listing using a POST request after validating it
-router.post(
-  "/",
+
+
+
+router.route("/:id")
+
+  //--------------------------Show Route----------------------------
+  //this will show a particular listing that has been clicked upon - READ
+.get(wrapAsync(listingController.showListing))
+//--------------------------Update Route----------------------------------
+//this route will help redirect from the edit route and it will put the newly updated listing on the homepage after validating the request
+.put(
   isLoggedIn,
+  isOwner,
   validateListing,
-  wrapAsync(listingController.createListing)
+  wrapAsync(listingController.updateListing)
+)
+
+//-------------------------Delete Route--------------------------------------------
+.delete(
+  isLoggedIn,
+  isOwner,
+  wrapAsync(listingController.destroyListing)
 );
-//--------------------------Show Route----------------------------
-//this will show a particular listing that has been clicked upon - READ
-router.get("/:id", wrapAsync(listingController.showListing));
+
+
+
+
 //--------------------------Edit Route-----------------------------------
 router.get(
   "/:id/edit",
@@ -31,22 +60,6 @@ router.get(
   isOwner,
   wrapAsync(listingController.renderEditForm)
 );
-//--------------------------Update Route----------------------------------
-//this route will help redirect from the edit route and it will put the newly updated listing on the homepage after validating the request
-router.put(
-  "/:id",
-  isLoggedIn,
-  isOwner,
-  validateListing,
-  wrapAsync(listingController.updateListing)
-);
 
-//-------------------------Delete Route--------------------------------------------
-router.delete(
-  "/:id",
-  isLoggedIn,
-  isOwner,
-  wrapAsync(listingController.destroyListing)
-);
 
 module.exports = router;
