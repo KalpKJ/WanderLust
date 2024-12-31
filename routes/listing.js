@@ -2,25 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Listing = require("../models/listing.js"); //requiring the Listing that are being exported by the  "listing.js" file
 const wrapAsync = require("../utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
-const {listingSchema} = require("../schema.js");//a joi package that checks if the data that client sent has a valid schema or not
-const ExpressError = require ("../utils/ExpressErrors.js"); //to handle errors thrown by Express
-const {isLoggedIn} = require("../middleware.js"); // added the middleware file
+const {isLoggedIn, isOwner, validateListing} = require("../middleware.js"); // added the middleware file
 
-
-//a function that uses joi to validate listing on server side
-const validateListing = (req, res, next) =>{
-
-    //extracting if there is any error from the request body using joi
-    let {error} = listingSchema.validate(req.body);
-
-    //if there is error we will throw our ExpressError
-    if(error){
-        let errMsg = error.details.map((el) =>el.message).join(",");
-        throw new ExpressError(400, errMsg);
-    }else{//else we will call next middleware
-        next();
-    }
-}
 
 //-------------------Index Route------------------------
 //this will show us all the listings that are added by default
@@ -78,6 +61,7 @@ router.get(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     //storing the id in a variable that is coming as parameters in request
     let { id } = req.params;
@@ -96,6 +80,7 @@ router.get(
 router.put(
   "/:id",
   isLoggedIn,
+  isOwner,
   validateListing,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
@@ -114,6 +99,7 @@ router.put(
 router.delete(
   "/:id",
   isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);

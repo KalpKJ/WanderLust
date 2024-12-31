@@ -1,25 +1,11 @@
 const express = require("express");
 const router = express.Router({mergeParams: true});
 const wrapAsync = require("../utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
-const ExpressError = require("../utils/ExpressErrors.js"); //to handle errors thrown by Express
-const { reviewSchema } = require("../schema.js"); //a joi package that checks if the data that client sent has a valid schema or not
+const { validateReview } = require("../middleware.js"); //a joi package that checks if the data that client sent has a valid schema or not
 const Review = require("../models/review.js"); ////requiring the Review that are being exported by the  "review.js" file
 const Listing = require("../models/listing.js"); //requiring the Listing that are being exported by the  "listing.js" file
 
-//a function that uses joi to validate reviews on server side
-const validateReview = (req, res, next) => {
-  //extracting if there is any error from the request body using joi
-  let { error } = reviewSchema.validate(req.body);
 
-  //if there is error we will throw our ExpressError
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    //else we will call next middleware
-    next();
-  }
-};
 
 //----------***************Reviews***********--------------------------
 // -------------------(Post Review Route)------------------------------------
