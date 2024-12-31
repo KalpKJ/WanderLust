@@ -4,19 +4,11 @@ const Listing = require("../models/listing.js"); //requiring the Listing that ar
 const wrapAsync = require("../utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
 const {isLoggedIn, isOwner, validateListing} = require("../middleware.js"); // added the middleware file
 
+const listingController = require("../controllers/listings.js")
 
 //-------------------Index Route------------------------
 //this will show us all the listings that are added by default
-router.get(
-  "/",
-  wrapAsync(async (req, res) => {
-    //this is finding all the listings stored in 'Listing' model of DB
-    const allListings = await Listing.find({});
-
-    //we are rendering the html page through 'index.ejs' and passing in the all the listings to use in that file
-    res.render("./listings/index.ejs", { allListings });
-  })
-);
+router.get("/", wrapAsync(listingController.index));
 
 //--------------------------New Route----------------------------
 //this route will take you to a page where you can add your own listing
