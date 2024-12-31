@@ -35,6 +35,9 @@ const initDB = async () =>{
     //cleaning the already existing data
     await Listing.deleteMany({});
 
+    //adding a new owner object with the given id to each of the data in our array
+    initData.data = initData.data.map((obj) =>({...obj, owner: "6770be558f2f3bfde74630a7"}))
+
     //inserting all the data that the file received from "data.js"
     await Listing.insertMany(initData.data);
 
