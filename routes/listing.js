@@ -4,7 +4,8 @@ const Listing = require("../models/listing.js"); //requiring the Listing that ar
 const wrapAsync = require("../utils/wrapAsync.js"); //it is an async functions which takes another functions as @params and catches errors
 const {isLoggedIn, isOwner, validateListing} = require("../middleware.js"); // added the middleware file
 const multer = require("multer") //to read the data of image that is coming in form of files instead of url
-const upload = multer({dest: "uploads/"}); //storing the data here in this folder
+const {storage} = require("../cloudConfig.js");
+const upload = multer({storage}); //storing the data here in the stoage of cloudinary
 
 const listingController = require("../controllers/listings.js")
 
