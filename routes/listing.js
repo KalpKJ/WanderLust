@@ -20,14 +20,12 @@ router.route("/")
 
   //------------------------Create Route-----------------------------
   //this will actually add a new listing using a POST request after validating it
-  // .post(
-  //   isLoggedIn,
-  //   validateListing,
-  //   wrapAsync(listingController.createListing)
-  // )
-  .post(upload.single('listing[image]'), (req, res) => {
-    res.send(req.file);
-  });
+  .post(
+    isLoggedIn,
+    upload.single("listing[image]"),
+    validateListing,
+    wrapAsync(listingController.createListing)
+  );
 //********************************************************************************************************** */
 //--------------------------New Route----------------------------
 //this route will take you to a page where you can add your own listing
