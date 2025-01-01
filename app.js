@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV != "production"){
+    require('dotenv').config();
+}
+
 const express = require("express"); //to start localhost server
 const app = express(); //storing it in a variable
 const mongoose = require("mongoose"); //required to interact with Database
