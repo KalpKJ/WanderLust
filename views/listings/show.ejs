@@ -5,6 +5,10 @@ controller using the listing object. The listing object is an instance of the
 Listing model, which contains the data. -->
 
 <% layout('layouts/boilerplate') %>
+
+    <script>
+        const mapToken = "<%= process.env.MAP_TOKEN %>";
+    </script>
     <div class="row mt-3">
         <div class="col-8 offset-3">
 
@@ -119,4 +123,6 @@ Listing model, which contains the data. -->
                 </div>
                
     </div>
+
+    <script src = "/js/map.js"></script>
     
